@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:tirtekna/common/pages/scan_page.dart';
 import 'package:tirtekna/common/ui/app_button_login.dart';
 import 'package:tirtekna/utils/application.dart';
 
@@ -117,8 +118,8 @@ class _FailedPagesState extends State<FailedPages> {
   void requestpermisi() async {
     var statuspermisi = await Permission.camera.request();
     if (statuspermisi.isGranted) {
-      // Navigator.push(
-      //     context, MaterialPageRoute(builder: (_) => const ScanPage()));
+      Navigator.push(
+          context, MaterialPageRoute(builder: (_) => const ScanPage()));
     } else if (statuspermisi.isDenied) {
       requestpermisi();
     } else if (statuspermisi.isPermanentlyDenied) {

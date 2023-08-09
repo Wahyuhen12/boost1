@@ -5,12 +5,15 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tirtekna/utils/database.dart';
 import 'package:tirtekna/utils/encrypt.dart';
 import 'package:tirtekna/common/setting/constanta.dart' as constanta;
+import 'package:android_id/android_id.dart';
 
 class DeviceInfo {
   static final DeviceInfo _deviceInfo = DeviceInfo._internal();
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   static final device = deviceInfoPlugin.androidInfo;
+  static const AndroidId _androidIdPlugin = AndroidId();
   static AndroidDeviceInfo? build;
+  static String? androidID;
   static PackageInfo? info;
 
   late DatabaseHelper _db;
@@ -28,6 +31,7 @@ class DeviceInfo {
   Future initialize(Encrypt encrypt, DatabaseHelper db) async {
     info = await PackageInfo.fromPlatform();
     build = await device;
+    androidID = await _androidIdPlugin.getId() ?? 'Unknown ID';
 
     _db = db;
     _encrypt = encrypt;
@@ -35,7 +39,7 @@ class DeviceInfo {
 
   //HardwareID
   String getHardwareID() {
-    return build!.androidId.toString();
+    return androidID.toString();
   }
 
   //HardwareIDRequest
@@ -43,11 +47,7 @@ class DeviceInfo {
     Random random = Random();
     int randomNumber1 = random.nextInt(9999999) + 1111111;
     int randomNumber2 = random.nextInt(9999999) + 1111111;
-    final hdd = randomNumber1.toString() +
-        "{#}" +
-        build!.androidId.toString() +
-        "{#}" +
-        randomNumber2.toString();
+    final hdd = "$randomNumber1{#}${androidID.toString()}{#}$randomNumber2";
 
     return _encrypt.mobileEncode(hdd, String.fromCharCodes(constanta.skey));
   }
@@ -73,12 +73,7 @@ class DeviceInfo {
       osver = "IOS";
     }
     // var build = await device;
-    return osver! +
-        " " +
-        build!.version.sdkInt.toString() +
-        " (" +
-        build!.manufacturer.toString() +
-        ")";
+    return "${osver!} ${build!.version.sdkInt} (${build!.manufacturer})";
   }
 
   //GetAppVersion
